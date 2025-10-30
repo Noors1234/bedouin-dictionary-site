@@ -1,1 +1,55 @@
-body{font-family:Arial}
+style.css
+
+/* style.css — تصميم عربي RTL مستوحى من البيئة الصحراوية */
+:root{
+  --bg:#fbf7f0;
+  --card:#fff;
+  --accent:#b77a2c; /* ذهبي/بني */
+  --muted:#7a6b5a;
+  --text:#2b2b2b;
+  --radius:12px;
+  font-family: 'Amiri', serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);margin:0;padding:0;}
+.site-header{padding:2rem;text-align:center}
+.site-header h1{margin:.2rem 0;font-size:2rem}
+.lead{color:var(--muted);margin-top:0}
+.container{max-width:1000px;margin:0 auto;padding:1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.card{background:var(--card);border-radius:var(--radius);padding:1rem;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.card h2{margin:0 0 .5rem}
+.audio{width:100%}
+.desc{margin-top:.5rem;font-size:.95rem;color:var(--muted)}
+.download{display:inline-block;margin-top:.75rem;padding:.4rem .6rem;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none}
+.site-footer{text-align:center;padding:1rem;color:var(--muted)}
+.empty{text-align:center;padding:2rem;color:var(--muted)}
+
+/* admin */
+.admin .upload{margin-bottom:1.5rem}
+.admin input[type=file]{display:block;margin:0.6rem 0}
+.msg{background:#f1f1f1;padding:.6rem;border-radius:8px;margin-bottom:.5rem}
+.files ul{list-style:none;padding:0;margin:0}
+.files li{padding:.4rem 0;border-bottom:1px solid #eee}
+.files a{margin-left:8px;text-decoration:none;color:var(--accent)}
+
+/* responsive tweaks */
+@media (max-width:420px){
+  .site-header h1{font-size:1.4rem}
+}
+
+
+---
+
+.htaccess (اختياري، لمنع تنفيذ الملفات في مجلد audio)
+
+# منع تنفيذ سكربتات في مجلد audio
+<FilesMatch "\\.(php|phtml|php3|php4|pl|py|jsp|asp)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+> ضع ملف .htaccess داخل مجلد audio/ لضمان أن الملفات الصوتية غير قابلة للتنفيذ إن تم رفعها بشكل خاطئ.
+
+
+
