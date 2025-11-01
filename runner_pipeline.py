@@ -1,5 +1,4 @@
 import os
-import json
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.oauth2 import service_account
@@ -8,7 +7,7 @@ SERVICE_JSON_ENV = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
 SERVICE_JSON_PATH = "service_account.json"
 
 if not SERVICE_JSON_ENV:
-    raise RuntimeError("لم يتم العثور على متغير البيئة GOOGLE_SERVICE_ACCOUNT_JSON. ضع محتوى JSON هنا في إعدادات Render.")
+    raise RuntimeError("لم يتم العثور على متغير البيئة GOOGLE_SERVICE_ACCOUNT_JSON.")
 
 with open(SERVICE_JSON_PATH, "w", encoding="utf-8") as fh:
     fh.write(SERVICE_JSON_ENV)
@@ -21,10 +20,7 @@ FOLDER_ID = "18tzYP15t9Ly2cmMCTZAfcRsSdN0FOSUS"
 
 def upload_to_drive(file_path):
     file_name = os.path.basename(file_path)
-    file_metadata = {
-        'name': file_name,
-        'parents': [FOLDER_ID]
-    }
+    file_metadata = {'name': file_name, 'parents': [FOLDER_ID]}
     media = MediaFileUpload(file_path, mimetype='audio/wav')
     try:
         file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
@@ -34,7 +30,7 @@ def upload_to_drive(file_path):
         print("Upload error:", e)
         return None
 
-if __name__ == "__main__":
+def main():
     audio_dir = "audio"
     if os.path.exists(audio_dir):
         for file in os.listdir(audio_dir):
@@ -42,3 +38,6 @@ if __name__ == "__main__":
                 upload_to_drive(os.path.join(audio_dir, file))
     else:
         print(f"No folder named '{audio_dir}' found.")
+
+if __name__ == "__main__":
+    main()
