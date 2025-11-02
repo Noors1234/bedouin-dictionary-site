@@ -3,22 +3,131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>القاموس البدوي الصوتي</title>
+<title>قريبًا</title>
 <style>
-body { font-family: Arial, sans-serif; background: #f0f0f0; direction: rtl; text-align: center; }
-header { background: #4a4a4a; color: #fff; padding: 20px; }
-main { margin: 20px; }
-button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: 'Cairo', sans-serif; overflow: hidden; background: #0d0d0d; color: #fff; }
+
+    canvas { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
+
+    .content {
+        position: relative; z-index:1; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px;
+    }
+
+    h1 { font-size:3rem; margin-bottom:30px; letter-spacing:2px; text-shadow:0 0 15px rgba(0,255,204,0.7); }
+    #countdown { font-size:2rem; margin-bottom:40px; background:rgba(0,0,0,0.5); padding:15px 25px; border-radius:15px; box-shadow:0 0 20px rgba(0,255,204,0.6); text-shadow:0 0 5px #00ffcc; }
+    .footer { font-size:1.2rem; line-height:1.6; text-shadow:0 0 5px #00ffcc; }
+    .footer a { color:#00ffcc; text-decoration:none; font-weight:bold; padding:8px 15px; background:rgba(0,0,0,0.4); border-radius:8px; transition:0.3s; }
+    .footer a:hover { background:rgba(0,255,204,0.4); }
+
+    @media(max-width:600px){ h1{font-size:2rem;} #countdown{font-size:1.5rem;padding:10px 15px;} .footer{font-size:1rem;} }
 </style>
 </head>
 <body>
-<header>
-<h1>القاموس البدوي الصوتي</h1>
-<p>مشروع توثيق النطق البدوي والخليجي والحوراني</p>
-</header>
-<main>
-<p>يتم رفع الأصوات تلقائيًا إلى Google Drive عند تشغيل الموقع.</p>
-<button onclick="alert('جاري الرفع تلقائيًا في الخلفية')">تشغيل الرفع</button>
-</main>
+<canvas id="ai-bg"></canvas>
+
+<div class="content">
+    <h1>الموقع سيطلق قريبًا</h1>
+    <div id="countdown"></div>
+    <div class="footer">
+        هندسة وإدارة نورس الوريور <br>
+        واتساب: <a href="https://wa.me/963939341996" target="_blank">+963939341996</a>
+    </div>
+</div>
+
+<script>
+    // العد التنازلي
+    const launchDate = new Date("2026-01-01T00:00:00").getTime();
+    const countdownElement = document.getElementById("countdown");
+
+    function updateCountdown(){
+        const now = new Date().getTime();
+        const distance = launchDate - now;
+        if(distance <=0){ countdownElement.innerHTML="تم إطلاق الموقع!"; clearInterval(timer); return; }
+        const days=Math.floor(distance/(1000*60*60*24));
+        const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+        const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+        const seconds=Math.floor((distance%(1000*60))/1000);
+        countdownElement.innerHTML=`${days} يوم ${hours} ساعة ${minutes} دقيقة ${seconds} ثانية`;
+    }
+
+    const timer=setInterval(updateCountdown,1000);
+    updateCountdown();
+
+    // خلفية ثلاثية الأبعاد AI
+    const canvas=document.getElementById('ai-bg');
+    const ctx=canvas.getContext('2d');
+    let width=canvas.width=window.innerWidth;
+    let height=canvas.height=window.innerHeight;
+
+    const nodes=[];
+    const nodeCount=100;
+    const perspective=500;
+
+    function random(min,max){ return Math.random()*(max-min)+min; }
+
+    class Node3D {
+        constructor(){
+            this.x=random(-width/2,width/2);
+            this.y=random(-height/2,height/2);
+            this.z=random(-perspective,perspective);
+            this.vx=random(-0.2,0.2);
+            this.vy=random(-0.2,0.2);
+            this.vz=random(0.1,0.5);
+        }
+        move(){
+            this.x += this.vx;
+            this.y += this.vy;
+            this.z += this.vz;
+            if(this.z>perspective) this.z=-perspective;
+        }
+        project(){
+            return {
+                x: width/2 + this.x * (perspective/(perspective+this.z)),
+                y: height/2 + this.y * (perspective/(perspective+this.z)),
+                scale: perspective/(perspective+this.z)
+            };
+        }
+    }
+
+    for(let i=0;i<nodeCount;i++) nodes.push(new Node3D());
+
+    function draw(){
+        ctx.clearRect(0,0,width,height);
+        for(let i=0;i<nodes.length;i++){
+            const n=nodes[i];
+            const p=n.project();
+            ctx.beginPath();
+            ctx.arc(p.x,p.y,2*p.scale,0,Math.PI*2);
+            ctx.fillStyle="rgba(0,255,204,0.8)";
+            ctx.fill();
+
+            for(let j=i+1;j<nodes.length;j++){
+                const n2=nodes[j];
+                const p2=n2.project();
+                const dist=Math.hypot(p.x-p2.x,p.y-p2.y);
+                if(dist<150){
+                    ctx.strokeStyle=`rgba(0,255,204,${1-dist/150})`;
+                    ctx.lineWidth=1;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x,p.y);
+                    ctx.lineTo(p2.x,p2.y);
+                    ctx.stroke();
+                }
+            }
+
+            n.move();
+        }
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    window.addEventListener('resize',()=>{
+        width=canvas.width=window.innerWidth;
+        height=canvas.height=window.innerHeight;
+    });
+</script>
 </body>
 </html>
