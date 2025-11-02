@@ -1,4 +1,0 @@
-name: bedouin-tts-env
-dependencies:
-  - python=3.11
-  - pip
